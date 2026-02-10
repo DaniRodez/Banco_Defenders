@@ -3,7 +3,7 @@
 Nombre: Daniel Plascencia Rodríguez
 Codigo: 222262246
 Fecha: 09/02/2026
-Programa: No power
+Programa: No power cuad
 ----------------------------------------
 */
 
