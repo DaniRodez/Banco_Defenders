@@ -21,7 +21,8 @@ int main() {
     int opcion;
     int opcionint;
     char continuar;
-
+    int baseOrigen, baseDestino;
+    
     string numero;
 
     do {
@@ -50,7 +51,7 @@ int main() {
         cout << "4. Hexadecimal" << endl;
         cin >> opcion;
 
-        int baseOrigen, baseDestino;
+        
 
         switch (opcionint) {
             case 1: baseOrigen = 2; break;
