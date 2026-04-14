@@ -3,68 +3,96 @@
 Nombre: Daniel Plascencia Rodríguez
 Codigo: 222262246
 Fecha: 06/04/2026
-Programa: Conversor de bases numéricas
+Programa: Conversor de bases numericas
 ----------------------------------------
 */
 
 #include <iostream>
+#include <string>
+#include <cctype>
 
 using namespace std;
 
-int main() {
-int opcion;
-int numero;
-int opcionint;
-char continuar;
+// Declaracion de funciones
+int aDecimal(string num, int base);
+string desdeDecimal(int num, int base);
 
-do {
+int main() {
+    int opcion;
+    int opcionint;
+    char continuar;
+
+    string numero;
+
+    do {
         cout << "-----------------------------------------------" << endl;
-        cout << "Bienvenido al conversor de bases numéricas" << endl;
+        cout << "Bienvenido al conversor de bases numericas" << endl;
         cout << "-----------------------------------------------" << endl;
-        cout << "Ingrese el numero que desea convertir:" << endl;
+
+        cout << "Ingrese el numero que desea convertir: " << endl;
         cin >> numero;
         cout << endl;
-        cout << "Ingrese el número de opcion en el que esta el numero ingresado:" << endl;
+
+        cout << "Ingrese la base de origen: " << endl;
+        cout << endl;
         cout << "1. Binario" << endl;
         cout << "2. Octal" << endl;
         cout << "3. Decimal" << endl;
         cout << "4. Hexadecimal" << endl;
         cin >> opcionint;
         cout << endl;
-        cout << "Ingrese el número de opcion al que desea convertir:" << endl;
+        
+        cout << "Ingrese la base destino: " << endl;
+        cout << endl;
         cout << "1. Binario" << endl;
         cout << "2. Octal" << endl;
         cout << "3. Decimal" << endl;
         cout << "4. Hexadecimal" << endl;
         cin >> opcion;
-        cout << endl;
+
+        int baseOrigen, baseDestino;
+
+        switch (opcionint) {
+            case 1: baseOrigen = 2; break;
+            case 2: baseOrigen = 8; break;
+            case 3: baseOrigen = 10; break;
+            case 4: baseOrigen = 16; break;
+            default:
+                cout << "Base de origen invalida" << endl;
+                return 1;
+        }
 
         switch (opcion) {
-            case '1':
-                cout << "Opcion 1: Binario" << endl;
-                break;
-            case '2':
-                cout << "Opcion 2: Octal" << endl;
-                break;
-            case '3':
-                cout << "Opcion 3: Decimal" << endl;
-                break;
-            case '4':
-                cout << "Opcion 4: Hexadecimal" << endl;
-                break;
-            default:
-                cout << "Opcion no valida, saliendo del programa." << endl;
-                return 1; // Salir del programa si la opcion no es valida
-        }//fin switch
+            case 1: baseDestino = 2; break;
 
-        cout << "Desea continuar? (s/n): " << endl;
+            case 2: baseDestino = 8; break;
+            
+            case 3: baseDestino = 10; break;
+
+            case 4: baseDestino = 16; break;
+
+            default:
+                cout << "Base destino invalida" << endl;
+                return 1;
+        }
+
+        int decimal = aDecimal(numero, baseOrigen);
+        string resultado = desdeDecimal(decimal, baseDestino);
+
+        cout << endl;
+        cout << "Resultado: " << resultado << endl;
+
+        cout << endl;
+        cout << "Desea continuar? (s/n): ";
         cin >> continuar;
         cout << endl;
 
-}while (continuar == 's' || continuar == 'S');//fin do
-}//fin main
+    } while (continuar == 's' || continuar == 'S');
 
- //Fucion para convertir a decimal desde cualquier base
+    return 0;
+}
+
+// Convertir a decimal desde cualquier base
 int aDecimal(string num, int base) {
     int valor = 0;
 
@@ -81,4 +109,23 @@ int aDecimal(string num, int base) {
 
     return valor;
 }
-//Funcion para convertir de decimal a cualquier base
+
+// Convertir desde decimal a cualquier base
+string desdeDecimal(int num, int base) {
+    if (num == 0) return "0";
+
+    string resultado = "";
+
+    while (num > 0) {
+        int residuo = num % base;
+
+        if (residuo < 10)
+            resultado = char(residuo + '0') + resultado;
+        else
+            resultado = char(residuo - 10 + 'A') + resultado;
+
+        num /= base;
+    }
+
+    return resultado;
+}
