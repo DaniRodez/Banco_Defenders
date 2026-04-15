@@ -51,6 +51,9 @@ int main() {
     } while (continuar == 's' || continuar == 'S');
 
     cout << "Programa finalizado." << endl;
+    printf("\nPresiona Enter para salir...");
+    getchar(); 
+    getchar(); 
 
     return 0;
 }
