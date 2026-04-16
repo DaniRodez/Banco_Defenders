@@ -20,8 +20,7 @@ int main() {
 
     do {
         int contador = 0;
-
-        // Validacion del numero de discos
+        
         do {
             cout << "--------------------------------------------------------------" << endl;
             cout << "Bienvenido al solucionador del problema de las Torres de Hanoi" << endl;
@@ -30,6 +29,8 @@ int main() {
             cout << "Ingrese el numero de discos (3 - 7): ";
             cin >> n;
             cout << endl;
+
+            // Validacion del numero de discos
                 if (n < 3 || n > 7) {
                     system("cls"); // Limpiar pantalla 
                     cout << "Numero invalido. Por favor ingrese un numero entre 3 y 7." << endl;
@@ -56,7 +57,7 @@ int main() {
     printf("\nPresiona Enter para salir...");
 
     getchar(); // Esperar a que el usuario presione Enter antes de cerrar la consola
-    getchar(); 
+    getchar(); // Otro por que sin este no funciona
 
     return 0;
 }
