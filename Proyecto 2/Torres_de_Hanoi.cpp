@@ -37,8 +37,10 @@ int main() {
                 }
         } while (n < 3 || n > 7);
 
-        // Llamada a la funcion
-        hanoi(n, 'A', 'B', 'C', contador);
+           cout << "Lista de movimientos:" << endl;
+
+           // Llamada a la funcion
+           hanoi(n, 'A', 'B', 'C', contador);
 
         // Mostrar total de movimientos
         cout << "\nTotal de movimientos: " << contador << endl;
@@ -52,7 +54,8 @@ int main() {
 
     cout << "Programa finalizado." << endl;
     printf("\nPresiona Enter para salir...");
-    getchar(); 
+
+    getchar(); // Esperar a que el usuario presione Enter antes de cerrar la consola
     getchar(); 
 
     return 0;
