@@ -9,10 +9,12 @@ Programa: El ahorcado
 
 #include <iostream>
 #include <string>
-#include <srandom>
+#include <cstdlib>
+#include <ctime>
 
 using namespace std;
 
+// PROTOTIPOS
 void jugarAhorcado();
 string seleccionarPalabra();
 void mostrarEstadoJuego(string palabra, string letrasAdivinadas, int intentosRestantes);
@@ -23,50 +25,97 @@ int main() {
     do {
         jugarAhorcado();
 
-
-        // Repetir el juego
         cout << "¿Quieres jugar otra ronda? (s/n): ";
         cin >> game;
     } while (game == 's' || game == 'S');
+
+    return 0;
 }
 
-void jugarAhorcado(int mode, string word) {
+void jugarAhorcado() {
+    int mode;
+    string word;
+
     cout << "----------------------------------" << endl;
     cout << "¡Bienvenido al juego del ahorcado!" << endl;
     cout << "----------------------------------" << endl;
-    cout << endl;
-    cout << "\033[1;34mEscoje el modo de juego:\033[0m" << endl;
-    cout << "1. Contra la máquina" << endl;
-    cout << "2. Contra un amigo" << endl;
-    cout << "Ingresa el número del modo de juego: ";
-    cin >> mode;
-    if (mode == 1) {
-        cout << "Has elegido jugar contra la máquina." << endl;
-        
-        srandom(time(0));//generar un numero aleatorio para seleccionar una palabra de una lista predefinida
-        word = seleccionarPalabra();
 
-    } else if (mode == 2) {
-        cout << "Has elegido jugar contra un amigo." << endl;
-        cout << "Por favor, ingresa la palabra a adivinar: ";
-        cin >> word;
-        
+    // elegir modo
+    do {
+        cout << "1. Contra la máquina" << endl;
+        cout << "2. Contra un amigo" << endl;
+        cout << "Ingresa el número del modo: ";
+        cin >> mode;
+    } while (mode != 1 && mode != 2);
+
+    // seleccionar palabra
+    if (mode == 1) {
+        srand(time(0));
+        word = seleccionarPalabra();
     } else {
-        cout << "Opción no válida. Por favor, elige 1 o 2: " << endl;
-        cin >> mode; // Volver a pedir la opción
+        cout << "Ingresa la palabra: ";
+        cin >> word;
     }
 
+    // VARIABLES DEL JUEGO
+    string letrasAdivinadas = "";
+    int intentosRestantes = 6;
+    bool gano = false;
+
+    // CICLO PRINCIPAL
+    while (intentosRestantes > 0 && !gano) {
+
+        mostrarAhorcado(intentosRestantes);
+        mostrarEstadoJuego(word, letrasAdivinadas, intentosRestantes);
+
+        char letra;
+        cout << "Ingresa una letra: ";
+        cin >> letra;
+
+        // verificar si ya la uso
+        if (letrasAdivinadas.find(letra) != string::npos) {
+            cout << "Ya intentaste esa letra.\n";
+            continue;
+        }
+
+        letrasAdivinadas += letra;
+
+        // verificar si la letra esta en la palabra
+        if (word.find(letra) == string::npos) {
+            cout << "Incorrecto!\n";
+            intentosRestantes--;
+        } else {
+            cout << "Correcto!\n";
+        }
+
+        // verificar si ya gano
+        gano = true;
+        for (char c : word) {
+            if (letrasAdivinadas.find(c) == string::npos) {
+                gano = false;
+                break;
+            }
+        }
+    }
+
+    // RESULTADO FINAL
+    if (gano) {
+        cout << "\n¡Ganaste! La palabra era: " << word << endl;
+    } else {
+        mostrarAhorcado(0);
+        cout << "\nPerdiste. La palabra era: " << word << endl;
+    }
 }
 
-//funcion para seleccionar una palabra aleatoria de una lista predefinida
+// palabra aleatoria
 string seleccionarPalabra() {
     string palabras[] = {"programacion", "ahorcado", "computadora", "desarrollo", "juego"};
     int numPalabras = sizeof(palabras) / sizeof(palabras[0]);
-    int indice = random() % numPalabras;
+    int indice = rand() % numPalabras;
     return palabras[indice];
 }
 
-//funcion para mostrar el estado del juego, incluyendo la palabra oculta, las letras adivinadas y el número de intentos restantes
+// mostrar progreso
 void mostrarEstadoJuego(string palabra, string letrasAdivinadas, int intentosRestantes) {
     cout << "Palabra: ";
     for (char letra : palabra) {
@@ -77,59 +126,35 @@ void mostrarEstadoJuego(string palabra, string letrasAdivinadas, int intentosRes
         }
     }
     cout << endl;
-    cout << "Letras adivinadas: " << letrasAdivinadas << endl;
+
+    cout << "Letras usadas: " << letrasAdivinadas << endl;
     cout << "Intentos restantes: " << intentosRestantes << endl;
 }
 
-//funcion para mostrar el ahorcado en función del número de intentos restantes
+// dibujo del ahorcado
 void mostrarAhorcado(int intentosRestantes) {
-    switch (intentosRestantes) {
-        if (intentosRestantes == 6) {
-            cout << "  +---+" << endl;
-            cout << "  |   |" << endl;
-            cout << "      |" << endl;}
-        else if (intentosRestantes == 5) {
-            cout << "  +---+" << endl;
-            cout << "  |   |" << endl;
-            cout << "  O   |" << endl;
-            cout << "      |" << endl;
-        }
-        else if (intentosRestantes == 4) {
-            cout << "  +---+" << endl;
-            cout << "  |   |" << endl;
-            cout << "  O   |" << endl;
-            cout << "  |   |" << endl;
-            cout << "      |" << endl;
-        }
-        else if (intentosRestantes == 3) {
-            cout << "  +---+" << endl;
-            cout << "  |   |" << endl;
-            cout << "  O   |" << endl;
-            cout << " /|   |" << endl;
-            cout << "      |" << endl;
-        }
-        else if (intentosRestantes == 2) {
-            cout << "  +---+" << endl;
-            cout << "  |   |" << endl;
-            cout << "  O   |" << endl;
-            cout << " /|\\  |" << endl;
-            cout << "      |" << endl;
-        }
-        else if (intentosRestantes == 1) {
-            cout << "  +---+" << endl;
-            cout << "  |   |" << endl;
-            cout << "  O   |" << endl;
-            cout << " /|\\  |" << endl;
-            cout << " /    |" << endl;
-        }
-        else if (intentosRestantes == 0) {
-            cout << "\033[41m"; // fondo rojo
-            cout << "  +---+" << endl;
-            cout << "  |   |" << endl;
-            cout << "  O   |" << endl;
-            cout << " /|\\  |" << endl;
-            cout << " / \\  |" << endl;
-            cout << "Game Over!" << endl;
-        }
+
+    if (intentosRestantes == 6) {
+        cout << "  +---+\n  |   |\n      |\n";
+    }
+    else if (intentosRestantes == 5) {
+        cout << "  +---+\n  |   |\n  O   |\n      |\n";
+    }
+    else if (intentosRestantes == 4) {
+        cout << "  +---+\n  |   |\n  O   |\n  |   |\n      |\n";
+    }
+    else if (intentosRestantes == 3) {
+        cout << "  +---+\n  |   |\n  O   |\n /|   |\n      |\n";
+    }
+    else if (intentosRestantes == 2) {
+        cout << "  +---+\n  |   |\n  O   |\n /|\\  |\n      |\n";
+    }
+    else if (intentosRestantes == 1) {
+        cout << "  +---+\n  |   |\n  O   |\n /|\\  |\n /    |\n";
+    }
+    else {
+        cout << "\033[41m";
+        cout << "  +---+\n  |   |\n  O   |\n /|\\  |\n / \\  |\n";
+        cout << "Game Over!\n\033[0m";
     }
 }
