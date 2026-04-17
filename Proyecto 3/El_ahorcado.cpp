@@ -9,9 +9,9 @@ Programa: El ahorcado
 
 #include <iostream>
 #include <string>
-#include <cstdlib>
-#include <ctime>
-#include <windows.h>
+#include <cstdlib>// para system("cls") 
+#include <ctime>// para generar palabras aleatorias
+#include <windows.h>// para sonidos y colores
 
 using namespace std;
 
@@ -35,6 +35,7 @@ int main() {
 
         cout << "Quieres jugar otra ronda? (s/n): ";
         cin >> game;
+        system("cls"); // limpiar pantalla para la siguiente ronda
     } while (game == 's' || game == 'S');
 
     return 0;
@@ -44,6 +45,7 @@ void jugarAhorcado() {
     int mode;
     string word;
 
+    system("color 0F"); // resetear color
     cout << "----------------------------------" << endl;
     cout << "Bienvenido al juego del ahorcado!" << endl;
     cout << "----------------------------------" << endl;
@@ -59,10 +61,14 @@ void jugarAhorcado() {
     // seleccionar palabra
     if (mode == 1) {
         srand(time(0));
-        word = seleccionarPalabra();
+        word = seleccionarPalabra();// seleccionar palabra aleatoria
     } else {
         cout << "Ingresa la palabra: ";
         cin >> word;
+        // convertir a minusculas
+        for (char& c : word) {
+            c = tolower(c);
+        }
     }
 
     
@@ -71,8 +77,8 @@ void jugarAhorcado() {
 
         limpiarPantalla(); // limpiar pantalla para mostrar el progreso actualizado
         
-        mostrarAhorcado(intentosRestantes);
-        mostrarEstadoJuego(word, letrasAdivinadas, intentosRestantes);
+        mostrarAhorcado(intentosRestantes); // mostrar dibujo del ahorcado
+        mostrarEstadoJuego(word, letrasAdivinadas, intentosRestantes);// mostrar progreso del juego
 
         char letra;
         
@@ -111,11 +117,18 @@ void jugarAhorcado() {
         cout << "\nGanaste! La palabra era: " << word << endl;
         Beep(1200, 200); // sonido agudo de victoria
         gano = false; // resetear para la siguiente ronda
+        word = "";
+        letrasAdivinadas = "";
+        intentosRestantes = 6;
 
     } else {
         system("color 4F"); // cambiar color de fondo a rojo
         cout << "\nPerdiste. La palabra era: " << word << endl;
         Beep(400, 300); // sonido grave de derrota
+        word = "";
+        gano = false; // resetear para la siguiente ronda
+        letrasAdivinadas = "";
+        intentosRestantes = 6;
     }
 }
 
