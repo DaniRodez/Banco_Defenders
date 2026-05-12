@@ -1,2 +1,0 @@
-La palabra secreta se almacena gracias a un string, el cual despues de ser gurdado se convierte a minusculas para preveer situaciones en las que el usuario ingresa una letra y si se encuentra en la palabra, pero esta en mayuscula por lo que no son iguales.
-O en su defecto cuando se juega contra la computadora se tiene una pequeña base de datos de palabras dentro de una función, la cual genera un número aleatório y a partir de allí escoge que palabra usar para adivinar.
