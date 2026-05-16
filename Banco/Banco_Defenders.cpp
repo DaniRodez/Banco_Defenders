@@ -35,7 +35,7 @@ int main() {
 
         ofstream archivo(Nombre_Archivo);
 
-        archivo << "Usuario,Contrasenia,RFC,Monto,Plazo" << endl;
+        archivo << "Usuario,Contrasenia,RFC,Saldo,Adeudo,Plazo" << endl;
 
         archivo.close();
     }
@@ -51,27 +51,35 @@ int main() {
         switch (opcion) {
 
         case 1:
+            system("cls"); // Limpiar pantalla
             registrarUsuario();
-            break;
 
         case 2:
+            system("cls"); // Limpiar pantalla
             consultarSaldo();
-            break;
 
         case 3:
-            cout << "Modulo de adeudos en construccion.\n";
-            break;
+            system("cls"); // Limpiar pantalla
+            cout << "Modulo de adeudos en construccion." << endl;
+            system("pause");
 
         case 4:
-            cout << "Modulo de prestamos en construccion.\n";
-            break;
+            system("cls"); // Limpiar pantalla
+            cout << "Modulo de prestamos en construccion." << endl;
+            system("pause");
 
         case 5:
-            cout << "Saliendo del sistema...\n";
-            break;
+            system("cls"); // Limpiar pantalla
+            cout << "Saliendo del sistema..." << endl;
+            system("pause");
+
+        case 99:
+            system("cls"); // Limpiar pantalla
+            cout << "Opcion secreta: Modulo de administracion en construccion." << endl;
+            system("pause");
 
         default:
-            cout << "Opcion invalida.\n";
+            system("cls"); // Limpiar pantalla
         }
 
     } while (opcion != 5);
@@ -85,23 +93,21 @@ int menuPrincipal() {
 
     int opcion;
 
+    system("cls"); // Limpiar pantalla
     cout << "==============================================================" << endl;
     cout << "  ____    _    _   _  ____ ___    "<< endl;
     cout << " | __ )  / \\  | \\ | |/ ___/ _ \\ " << endl;
     cout << " |  _ \\ / _ \\ |  \\| | |  | | | | " << endl;
     cout << " | |_) / ___ \\| |\\  | |__| |_| |  " << endl;
     cout << " |____/_/   \\_\\_| \\_|\\____\\___/ " << endl;
-
     cout << endl;
-
     cout << "  ____  _____ _____ _____ _   _ ____  _____ ____  ____  " << endl;
     cout << " |  _ \\| ____|  ___| ____| \\ | |  _ \\| ____|  _ \\/ ___| " << endl;
     cout << " | | | |  _| | |_  |  _| |  \\| | | | |  _| | |_) \\___ \\ " << endl;
     cout << " | |_| | |___|  _| | |___| |\\  | |_| | |___|  _ < ___) | " << endl;
     cout << " |____/|_____|_|   |_____|_| \\_|____/|_____|_| \\_\\____/ " << endl;
-
     cout << "==============================================================" << endl;
-
+    cout << endl;
     cout << "1- Registrar usuario" << endl;
     cout << "2- Consultar saldo" << endl;
     cout << "3- Consultar y/o pagar adeudos" << endl;
@@ -119,6 +125,9 @@ int menuPrincipal() {
 void registrarUsuario() {
 
     string username, password, rfc;
+    cout << "===============================" << endl;
+    cout<< "Seleccionaste registrar usuario" << endl;
+    cout << "===============================" << endl;
 
     cout << "\nIngrese un nombre de usuario: ";
     cin >> username;
@@ -147,15 +156,18 @@ void registrarUsuario() {
                 << rfc << ","
                 << "0,"
                 << "0"
+                << "0"
                 << endl;
 
         archivo.close();
 
-        cout << "\nUsuario registrado correctamente.\n";
+        cout << "Usuario registrado correctamente." << endl;
+            system("pause");
 
     } else {
 
-        cout << "Error al abrir el archivo.\n";
+        cout << "Error al abrir el archivo." << endl;
+         system("pause");
     }
 }
 
@@ -190,36 +202,59 @@ bool usuarioExiste(string username) {
 
 void consultarSaldo() {
 
-    string username;
+    string username, password;
     string linea;
 
-    cout << "\nIngrese el nombre de usuario: ";
+    cout << "===============================" << endl;
+    cout<< "Seleccionaste consultar saldo" << endl;
+    cout << "===============================" << endl;
+
+    cout << "Ingrese el nombre de usuario: " << endl;
     cin >> username;
 
+    cout << "Ingrese la contrasenia: " << endl;
+    cin >> password;
+
     ifstream archivo(Nombre_Archivo);
+
+    bool encontrado = false;
+
+    // Saltar encabezado
+    getline(archivo, linea);
 
     while (getline(archivo, linea)) {
 
         stringstream stream(linea);
 
-        string usuario, password, rfc, saldo, adeudo;
+        string usuario, contrasenia, rfc, saldo, adeudo, plazo;
 
         getline(stream, usuario, ',');
-        getline(stream, password, ',');
+        getline(stream, contrasenia, ',');
         getline(stream, rfc, ',');
         getline(stream, saldo, ',');
         getline(stream, adeudo, ',');
+        getline(stream, plazo, ',');
 
-        if (usuario == username) {
+        // Verificar credenciales
+        if (usuario == username && contrasenia == password) {
 
-            cout << "\nSaldo actual: $" << saldo << endl;
+            cout << "Saldo actual: $" << saldo << endl;
+            /*cout << "Adeudo actual: $" << adeudo << endl;
+            cout << "Plazo: " << plazo << " dias" << endl;*/
 
-            archivo.close();
-            return;
+            encontrado = true;
+
+            system("pause");
+
+            break;
         }
     }
 
-    cout << "Usuario no encontrado.\n";
+    if (!encontrado) {
+
+        cout << "Contrasenia y/o usuario incorrectos." << endl;
+         system("pause");
+    }
 
     archivo.close();
 }
