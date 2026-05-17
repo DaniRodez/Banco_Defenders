@@ -24,6 +24,7 @@ void consultarAdeudos();
 void pagarAdeudos();
 void cotizarPrestamo();
 void realizarPrestamo();
+void admin();
 
 int main() {
 
@@ -53,30 +54,35 @@ int main() {
         case 1:
             system("cls"); // Limpiar pantalla
             registrarUsuario();
+            break;
 
         case 2:
             system("cls"); // Limpiar pantalla
             consultarSaldo();
+            break;
 
         case 3:
             system("cls"); // Limpiar pantalla
             cout << "Modulo de adeudos en construccion." << endl;
             system("pause");
+            break;
 
         case 4:
             system("cls"); // Limpiar pantalla
             cout << "Modulo de prestamos en construccion." << endl;
             system("pause");
+            break;
 
         case 5:
             system("cls"); // Limpiar pantalla
             cout << "Saliendo del sistema..." << endl;
             system("pause");
+            break;
 
         case 99:
             system("cls"); // Limpiar pantalla
-            cout << "Opcion secreta: Modulo de administracion en construccion." << endl;
-            system("pause");
+            admin();
+            break;
 
         default:
             system("cls"); // Limpiar pantalla
@@ -155,7 +161,7 @@ void registrarUsuario() {
                 << password << ","
                 << rfc << ","
                 << "0,"
-                << "0"
+                << "0,"
                 << "0"
                 << endl;
 
@@ -257,4 +263,49 @@ void consultarSaldo() {
     }
 
     archivo.close();
+}
+
+//Función para el modulo de administracion y mostrar los datos de los usuarios registrados (opcion secreta 99)
+void admin() {
+
+    ifstream archivo(Nombre_Archivo);
+
+    if (archivo.is_open()) {
+
+        string linea;
+
+        // Saltar encabezado
+        getline(archivo, linea);
+
+        cout << "=================================" << endl;
+        cout << "Datos de los usuarios registrados:" << endl;
+        cout << "=================================" << endl;
+
+        while (getline(archivo, linea)) {
+
+            stringstream stream(linea);
+            string usuario, contrasenia, rfc, saldo, adeudo, plazo;
+            char delimitador = ',';
+
+            getline(stream, usuario, ',');
+            getline(stream, contrasenia, ',');
+            getline(stream, rfc, ',');
+            getline(stream, saldo, ',');
+            getline(stream, adeudo, ',');
+            getline(stream, plazo, ',');
+
+            cout << "Usuario: " << usuario << endl;
+            cout << "RFC: " << rfc << endl;
+            cout << "Saldo: $" << saldo << endl;
+            cout << "Adeudo: $" << adeudo << endl;
+            cout << "Plazo: " << plazo << " dias" << endl;
+            cout << "---------------------------------" << endl;
+        }
+         system("pause");
+        archivo.close();
+    } else {
+
+        cout << "Error al abrir el archivo." << endl;
+         system("pause");
+    }
 }
