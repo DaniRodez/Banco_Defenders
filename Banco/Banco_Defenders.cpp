@@ -10,6 +10,7 @@ Programa: Banco Defenders
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <cmath>
 
 using namespace std;
 
@@ -326,7 +327,13 @@ void realizarPrestamo() {
     string username, password;
     string linea;
 
-    double montoPrestamo, interesMensual, pagoMensual;
+    double montoPrestamo;
+    double interesMensual;
+    double cuotaBase;
+    double seguroVida;
+    double pagoMensual;
+    double saldoRestante;
+
     int anios, meses;
 
     cout << "===============================" << endl;
@@ -375,22 +382,40 @@ void realizarPrestamo() {
 
             meses = anios * 12;
 
-            // Interes mensual del 12.9%
+            // Interes mensual basado en 12.9 anual
             interesMensual = (12.9 / meses) / 100;
 
-            // Pago mensual = capital mensual + interes
-            pagoMensual = (montoPrestamo / meses) + ((montoPrestamo * interesMensual));
+            // Formula de cuota base (amortizacion)
+            cuotaBase = (montoPrestamo * interesMensual) / (1 - pow(1 + interesMensual, -meses));
 
-            cout << "\nPago mensual: $" << pagoMensual << endl;
+            // Seguro de vida 1%
+            seguroVida = montoPrestamo * 0.01;
 
-            // Actualizar adeudo y plazo
-            adeudo = to_string(montoPrestamo);
+            // Pago mensual total
+            pagoMensual = cuotaBase + seguroVida;
+
+            // Saldo restante
+            saldoRestante = montoPrestamo;
+
+            cout << "\n===============================" << endl;
+            cout << "Cuota base: $" << cuotaBase << endl;
+            cout << "Seguro de vida: $" << seguroVida << endl;
+            cout << "Pago mensual total: $" << pagoMensual << endl;
+            cout << "===============================" << endl;
+
+            // Guardar adeudo actualizado
+            adeudo = to_string(saldoRestante);
+
+            // Guardar plazo
             plazo = to_string(meses);
+
+            // Guardar mensualidad
             mensualidad = to_string(pagoMensual);
+
             cout << "Prestamo realizado correctamente." << endl;
         }
 
-        // Guardar datos actualizados
+        // Actualizar archivo CSV
         temp << usuario << ","
              << contrasenia << ","
              << rfc << ","
