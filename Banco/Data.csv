@@ -1,3 +1,4 @@
-Usuario,Contrasenia,RFC,Saldo,Adeudo,Plazo
-Daniel,456,PARD060317,45,0,0
-Pancho,789,PAR170306,0,0,0
+Usuario,Contrasenia,RFC,Saldo,Adeudo,Plazo,Mensualidad
+Daniel,456,PARD060317,45,100.000000,12,9.408333
+Pancho,789,PAR170306,0,0,0,0
+Saul,123,GHJ789632,0,0,0,0

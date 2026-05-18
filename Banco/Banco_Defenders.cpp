@@ -69,8 +69,7 @@ int main() {
 
         case 4:
             system("cls"); // Limpiar pantalla
-            cout << "Modulo de prestamos en construccion." << endl;
-            system("pause");
+            realizarPrestamo();
             break;
 
         case 5:
@@ -139,7 +138,7 @@ void registrarUsuario() {
 
     string username, password, rfc;
     cout << "===============================" << endl;
-    cout<< "Seleccionaste registrar usuario" << endl;
+    cout << "Seleccionaste registrar usuario" << endl;
     cout << "===============================" << endl;
 
     cout << "\nIngrese un nombre de usuario: ";
@@ -167,6 +166,7 @@ void registrarUsuario() {
         archivo << username << ","
                 << password << ","
                 << rfc << ","
+                << "0,"
                 << "0,"
                 << "0,"
                 << "0"
@@ -239,7 +239,7 @@ void consultarSaldo() {
 
         stringstream stream(linea);
 
-        string usuario, contrasenia, rfc, saldo, adeudo, plazo;
+        string usuario, contrasenia, rfc, saldo, adeudo, plazo, mensualidad;
 
         getline(stream, usuario, ',');
         getline(stream, contrasenia, ',');
@@ -247,7 +247,8 @@ void consultarSaldo() {
         getline(stream, saldo, ',');
         getline(stream, adeudo, ',');
         getline(stream, plazo, ',');
-
+        getline(stream, mensualidad, ','); // Leer mensualidad
+        
         // Verificar credenciales
         if (usuario == username && contrasenia == password) {
 
@@ -291,7 +292,7 @@ void admin() {
         while (getline(archivo, linea)) {
 
             stringstream stream(linea);
-            string usuario, contrasenia, rfc, saldo, adeudo, plazo;
+            string usuario, contrasenia, rfc, saldo, adeudo, plazo, mensualidad;
             char delimitador = ',';
 
             getline(stream, usuario, ',');
@@ -300,12 +301,14 @@ void admin() {
             getline(stream, saldo, ',');
             getline(stream, adeudo, ',');
             getline(stream, plazo, ',');
+            getline(stream, mensualidad, ','); // Leer mensualidad
 
             cout << "Usuario: " << usuario << endl;
             cout << "RFC: " << rfc << endl;
             cout << "Saldo: $" << saldo << endl;
             cout << "Adeudo: $" << adeudo << endl;
             cout << "Plazo: " << plazo << " dias" << endl;
+            cout << "Mensualidad: $" << mensualidad << endl;
             cout << "---------------------------------" << endl;
         }
          system("pause");
@@ -315,4 +318,99 @@ void admin() {
         cout << "Error al abrir el archivo." << endl;
          system("pause");
     }
+}
+
+// Funcion para realizar un prestamo y calcular pago mensual
+void realizarPrestamo() {
+
+    string username, password;
+    string linea;
+
+    double montoPrestamo, interesMensual, pagoMensual;
+    int anios, meses;
+
+    cout << "===============================" << endl;
+    cout << "Seleccionaste realizar prestamo" << endl;
+    cout << "===============================" << endl;
+
+    cout << "Ingrese el nombre de usuario: ";
+    cin >> username;
+
+    cout << "Ingrese la contrasenia: ";
+    cin >> password;
+
+    ifstream archivo(Nombre_Archivo);
+
+    ofstream temp("Temp.csv");
+
+    bool encontrado = false;
+
+    // Copiar encabezado
+    getline(archivo, linea);
+    temp << linea << endl;
+
+    while (getline(archivo, linea)) {
+
+        stringstream stream(linea);
+
+        string usuario, contrasenia, rfc, saldo, adeudo, plazo, mensualidad;
+
+        getline(stream, usuario, ',');
+        getline(stream, contrasenia, ',');
+        getline(stream, rfc, ',');
+        getline(stream, saldo, ',');
+        getline(stream, adeudo, ',');
+        getline(stream, plazo, ',');
+        getline(stream, mensualidad, ','); // Leer mensualidad
+
+        if (usuario == username && contrasenia == password) {
+
+            encontrado = true;
+
+            cout << "Ingrese el monto del prestamo: ";
+            cin >> montoPrestamo;
+
+            cout << "Ingrese el plazo en anios (1-6 anios): ";
+            cin >> anios;
+
+            meses = anios * 12;
+
+            // Interes mensual del 12.9%
+            interesMensual = (12.9 / meses) / 100;
+
+            // Pago mensual = capital mensual + interes
+            pagoMensual = (montoPrestamo / meses) + ((montoPrestamo * interesMensual));
+
+            cout << "\nPago mensual: $" << pagoMensual << endl;
+
+            // Actualizar adeudo y plazo
+            adeudo = to_string(montoPrestamo);
+            plazo = to_string(meses);
+            mensualidad = to_string(pagoMensual);
+            cout << "Prestamo realizado correctamente." << endl;
+        }
+
+        // Guardar datos actualizados
+        temp << usuario << ","
+             << contrasenia << ","
+             << rfc << ","
+             << saldo << ","
+             << adeudo << ","
+             << plazo << ","
+             << mensualidad
+             << endl;
+    }
+
+    archivo.close();
+    temp.close();
+
+    remove(Nombre_Archivo);
+    rename("Temp.csv", Nombre_Archivo);
+
+    if (!encontrado) {
+
+        cout << "Usuario o contrasenia incorrectos." << endl;
+    }
+
+    system("pause");
 }
