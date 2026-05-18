@@ -75,6 +75,12 @@ int main() {
 
         case 5:
             system("cls"); // Limpiar pantalla
+            cout << "Modulo de transferencias en construccion." << endl;
+            system("pause");
+            break;
+
+        case 6:
+            system("cls"); // Limpiar pantalla
             cout << "Saliendo del sistema..." << endl;
             system("pause");
             break;
@@ -88,7 +94,7 @@ int main() {
             system("cls"); // Limpiar pantalla
         }
 
-    } while (opcion != 5);
+    } while (opcion != 6);
 
     return 0;
 }
@@ -118,7 +124,8 @@ int menuPrincipal() {
     cout << "2- Consultar saldo" << endl;
     cout << "3- Consultar y/o pagar adeudos" << endl;
     cout << "4- Cotizar y/o realizar prestamo" << endl;
-    cout << "5- Salir" << endl;
+    cout << "5- Realizar transferencia" << endl;
+    cout << "6- Salir" << endl;
 
     cout << "\nSeleccione una opcion: ";
     cin >> opcion;
