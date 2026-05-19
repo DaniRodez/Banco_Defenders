@@ -64,8 +64,7 @@ int main() {
 
         case 3:
             system("cls"); // Limpiar pantalla
-            cout << "Modulo de adeudos en construccion." << endl;
-            system("pause");
+            pagarAdeudos();
             break;
 
         case 4:
@@ -122,8 +121,8 @@ int menuPrincipal() {
     cout << endl;
     cout << "1- Registrar usuario" << endl;
     cout << "2- Consultar saldo" << endl;
-    cout << "3- Consultar y/o pagar adeudos" << endl;
-    cout << "4- Cotizar y/o realizar prestamo" << endl;
+    cout << "3- Pagar adeudos" << endl;
+    cout << "4- Realizar prestamo" << endl;
     cout << "5- Realizar transferencia" << endl;
     cout << "6- Salir" << endl;
 
@@ -413,6 +412,138 @@ void realizarPrestamo() {
             mensualidad = to_string(pagoMensual);
 
             cout << "Prestamo realizado correctamente." << endl;
+        }
+
+        // Actualizar archivo CSV
+        temp << usuario << ","
+             << contrasenia << ","
+             << rfc << ","
+             << saldo << ","
+             << adeudo << ","
+             << plazo << ","
+             << mensualidad
+             << endl;
+    }
+
+    archivo.close();
+    temp.close();
+
+    remove(Nombre_Archivo);
+    rename("Temp.csv", Nombre_Archivo);
+
+    if (!encontrado) {
+
+        cout << "Usuario o contrasenia incorrectos." << endl;
+    }
+
+    system("pause");
+}
+
+// Funcion para pagar adeudos
+
+void pagarAdeudos() {
+
+    string username, password;
+    string linea;
+
+    double abono;
+    double adeudoActual;
+    double nuevoAdeudo;
+
+    int plazoActual;
+    int nuevoPlazo;
+
+    cout << "===============================" << endl;
+    cout << "Seleccionaste pagar adeudos" << endl;
+    cout << "===============================" << endl;
+
+    cout << "Ingrese el nombre de usuario: ";
+    cin >> username;
+
+    cout << "Ingrese la contrasenia: ";
+    cin >> password;
+
+    ifstream archivo(Nombre_Archivo);
+
+    ofstream temp("Temp.csv");
+
+    bool encontrado = false;
+
+    // Copiar encabezado
+    getline(archivo, linea);
+    temp << linea << endl;
+
+    while (getline(archivo, linea)) {
+
+        stringstream stream(linea);
+
+        string usuario, contrasenia, rfc, saldo, adeudo, plazo, mensualidad;
+
+        getline(stream, usuario, ',');
+        getline(stream, contrasenia, ',');
+        getline(stream, rfc, ',');
+        getline(stream, saldo, ',');
+        getline(stream, adeudo, ',');
+        getline(stream, plazo, ',');
+        getline(stream, mensualidad, ',');
+
+        if (usuario == username && contrasenia == password) {
+
+            encontrado = true;
+
+            adeudoActual = stod(adeudo);
+            plazoActual = stoi(plazo);
+
+            cout << "\nAdeudo actual: $" << adeudoActual << endl;
+            cout << "Plazo restante: " << plazoActual << " meses" << endl;
+            cout << "Mensualidad: $" << mensualidad << endl;
+
+            cout << "\nIngrese cantidad a abonar: ";
+            cin >> abono;
+
+            // Validar abono
+            if (abono <= 0) {
+
+                cout << "Cantidad invalida." << endl;
+
+            } else if (abono > adeudoActual) {
+
+                cout << "El abono excede el adeudo." << endl;
+
+            } else {
+
+                nuevoAdeudo = adeudoActual - abono;
+
+                // Reducir plazo si existe adeudo
+                if (plazoActual > 0) {
+
+                    nuevoPlazo = plazoActual - 1;
+
+                } else {
+
+                    nuevoPlazo = 0;
+                }
+
+                adeudo = to_string(nuevoAdeudo);
+                plazo = to_string(nuevoPlazo);
+                mensualidad = to_string(stod(mensualidad) * (1 - (abono / adeudoActual)));
+
+                cout << "\n===============================" << endl;
+                cout << "Abono realizado correctamente." << endl;
+                cout << "Nuevo adeudo: $" << nuevoAdeudo << endl;
+                cout << "Plazo restante: " << nuevoPlazo << " meses" << endl;
+                cout << "Mensualidad: $" << mensualidad << endl;
+                cout << "===============================" << endl;
+
+                // Si termina de pagar
+                if (nuevoAdeudo <= 0) {
+
+                    adeudo = "0";
+                    plazo = "0";
+
+                    cout << "\nEl adeudo ha sido liquidado." << endl;
+                }
+            }
         }
 
         // Actualizar archivo CSV
