@@ -11,21 +11,27 @@ Programa: Banco Defenders
 #include <fstream>
 #include <sstream>
 #include <cmath>
+#include <vector>
 
 using namespace std;
 
+// Archivos
 #define Nombre_Archivo "Data.csv"
+#define Historial_Archivo "Historial.csv"
 
 // Funciones
 bool usuarioExiste(string username);
 int menuPrincipal();
 void registrarUsuario();
 void consultarSaldo();
-void consultarAdeudos();
+//void consultarAdeudos();
 void pagarAdeudos();
-void cotizarPrestamo();
+//void cotizarPrestamo();
 void realizarPrestamo();
 void admin();
+void realizarDeposito();
+void verHistorialCompleto();
+void guardarTransaccion(string usuario, string tipo, int monto);
 
 int main() {
 
@@ -44,9 +50,24 @@ int main() {
 
     verificar.close();
 
+    ifstream verificarHistorial(Historial_Archivo);
+
+    if (!verificarHistorial.good()) {
+
+        ofstream historial(Historial_Archivo);
+
+        historial << "Usuario,Tipo,Monto\n";
+
+        historial.close();
+    }
+
+    verificarHistorial.close();
+
     int opcion;
 
     do {
+
+        system("cls"); // Limpiar pantalla
 
         opcion = menuPrincipal();
 
@@ -74,8 +95,7 @@ int main() {
 
         case 5:
             system("cls"); // Limpiar pantalla
-            cout << "Modulo de transferencias en construccion." << endl;
-            system("pause");
+            realizarDeposito();
             break;
 
         case 6:
@@ -87,6 +107,7 @@ int main() {
         case 99:
             system("cls"); // Limpiar pantalla
             admin();
+            verHistorialCompleto();
             break;
 
         default:
@@ -104,7 +125,6 @@ int menuPrincipal() {
 
     int opcion;
 
-    system("cls"); // Limpiar pantalla
     cout << "==============================================================" << endl;
     cout << "  ____    _    _   _  ____ ___    "<< endl;
     cout << " | __ )  / \\  | \\ | |/ ___/ _ \\ " << endl;
@@ -123,10 +143,10 @@ int menuPrincipal() {
     cout << "2- Consultar saldo" << endl;
     cout << "3- Pagar adeudos" << endl;
     cout << "4- Realizar prestamo" << endl;
-    cout << "5- Realizar transferencia" << endl;
+    cout << "5- Realizar deposito" << endl;
     cout << "6- Salir" << endl;
 
-    cout << "\nSeleccione una opcion: ";
+    cout << "Seleccione una opcion: " << endl;
     cin >> opcion;
 
     return opcion;
@@ -311,7 +331,6 @@ void admin() {
             cout << "Mensualidad: $" << mensualidad << endl;
             cout << "---------------------------------" << endl;
         }
-         system("pause");
         archivo.close();
     } else {
 
@@ -396,11 +415,14 @@ void realizarPrestamo() {
             // Saldo restante
             saldoRestante = montoPrestamo;
 
-            cout << "\n===============================" << endl;
+            cout << "===============================" << endl;
             cout << "Cuota base: $" << cuotaBase << endl;
             cout << "Seguro de vida: $" << seguroVida << endl;
             cout << "Pago mensual total: $" << pagoMensual << endl;
             cout << "===============================" << endl;
+
+            // Guardar transaccion en historial
+            guardarTransaccion(username, "Prestamo", montoPrestamo);
 
             // Guardar adeudo actualizado
             adeudo = to_string(saldoRestante);
@@ -494,11 +516,12 @@ void pagarAdeudos() {
             adeudoActual = stod(adeudo);
             plazoActual = stoi(plazo);
 
-            cout << "\nAdeudo actual: $" << adeudoActual << endl;
+            cout << endl;
+            cout << "Adeudo actual: $" << adeudoActual << endl;
             cout << "Plazo restante: " << plazoActual << " meses" << endl;
             cout << "Mensualidad: $" << mensualidad << endl;
 
-            cout << "\nIngrese cantidad a abonar: ";
+            cout << "Ingrese cantidad a abonar: " << endl;
             cin >> abono;
 
             // Validar abono
@@ -513,22 +536,26 @@ void pagarAdeudos() {
             } else {
 
                 nuevoAdeudo = adeudoActual - abono;
+                guardarTransaccion(username, "Pago", stoi(adeudo));
 
                 // Reducir plazo si existe adeudo
                 if (plazoActual > 0) {
 
                     nuevoPlazo = plazoActual - 1;
+                    guardarTransaccion(username, "Pago", stoi(adeudo));
 
                 } else {
 
                     nuevoPlazo = 0;
+                    guardarTransaccion(username, "Pago", stoi(adeudo));
                 }
 
                 adeudo = to_string(nuevoAdeudo);
                 plazo = to_string(nuevoPlazo);
                 mensualidad = to_string(stod(mensualidad) * (1 - (abono / adeudoActual)));
 
-                cout << "\n===============================" << endl;
+                cout << endl;
+                cout << "===============================" << endl;
                 cout << "Abono realizado correctamente." << endl;
                 cout << "Nuevo adeudo: $" << nuevoAdeudo << endl;
                 cout << "Plazo restante: " << nuevoPlazo << " meses" << endl;
@@ -541,7 +568,10 @@ void pagarAdeudos() {
                     adeudo = "0";
                     plazo = "0";
 
-                    cout << "\nEl adeudo ha sido liquidado." << endl;
+                    cout << endl;
+                    cout << "El adeudo ha sido liquidado." << endl;
+                    guardarTransaccion(username, "Pago", stoi(adeudo));
+                    system("pause");
                 }
             }
         }
@@ -569,4 +599,173 @@ void pagarAdeudos() {
     }
 
     system("pause");
+}
+
+//Funcion para realizar transferencias
+void realizarDeposito() {
+
+    string username, password;
+    string linea;
+
+    cout << "===============================" << endl;
+    cout << "Seleccionaste realizar deposito" << endl;
+    cout << "===============================" << endl;
+
+    cout << "Ingrese el nombre de usuario: ";
+    cin >> username;
+
+    cout << "Ingrese la contrasenia: ";
+    cin >> password;
+
+    ifstream archivo(Nombre_Archivo);
+
+    vector<string> lineas;
+
+    bool encontrado = false;
+
+    // Guardar encabezado
+    getline(archivo, linea);
+    lineas.push_back(linea);
+
+    while (getline(archivo, linea)) {
+
+        stringstream stream(linea);
+
+        string usuario, contrasenia, rfc, saldo, adeudo, plazo;
+
+        getline(stream, usuario, ',');
+        getline(stream, contrasenia, ',');
+        getline(stream, rfc, ',');
+        getline(stream, saldo, ',');
+        getline(stream, adeudo, ',');
+        getline(stream, plazo, ',');
+
+        // Verificar usuario
+        if (usuario == username && contrasenia == password) {
+
+            encontrado = true;
+
+            int monto;
+
+            cout << "Ingrese el monto a depositar: $" << endl;
+            cin >> monto;
+
+            // Validar monto
+            if (monto <= 0) {
+
+                cout << "Monto invalido." << endl;
+                system("pause");
+                archivo.close();
+                return;
+            }
+
+            // Convertir saldo a entero
+            int saldoInt = stoi(saldo);
+
+            // Sumar deposito
+            saldoInt += monto;
+
+            // Convertir otra vez a string
+            saldo = to_string(saldoInt);
+
+            cout << endl;
+            cout << "Deposito realizado correctamente." << endl;
+            cout << "Nuevo saldo: $" << saldoInt << endl;
+    
+                // Guardar transaccion en historial
+                guardarTransaccion(username, "Deposito", monto);
+            
+        }
+
+        // Reconstruir linea
+        linea = usuario + "," +
+                 contrasenia + "," +
+                 rfc + "," +
+                 saldo + "," +
+                 adeudo + "," +
+                 plazo;
+
+        // Guardar linea actualizada
+        lineas.push_back(linea);
+    }
+
+    archivo.close();
+
+    // Reescribir TODO el archivo
+    ofstream archivoSalida(Nombre_Archivo);
+
+    for (string l : lineas) {
+
+        archivoSalida << l << endl;
+    }
+
+    archivoSalida.close();
+
+    if (!encontrado) {
+
+        cout << endl;
+        cout << "Contrasenia y/o usuario incorrectos." << endl;
+    }
+
+    system("pause");
+}
+
+// Funcion de historial
+void verHistorialCompleto() {
+
+    ifstream historial("Historial.csv");
+
+    string linea;
+
+    cout << "============================" << endl;
+    cout << " Historial de Transacciones " << endl;
+    cout << "============================" << endl;
+
+    // Saltar encabezado
+    getline(historial, linea);
+
+    bool vacio = true;
+
+    while (getline(historial, linea)) {
+
+        vacio = false;
+
+        stringstream stream(linea);
+
+        string usuario, tipo, monto;
+
+        getline(stream, usuario, ',');
+        getline(stream, tipo, ',');
+        getline(stream, monto, ',');
+
+        cout << "----------------------------------" << endl;
+        cout << "Usuario: " << usuario << endl;
+        cout << "Movimiento: " << tipo << endl;
+        cout << "Monto: $" << monto << endl;
+    }
+
+    if (vacio) {
+
+        cout << "No hay transacciones registradas." << endl;
+    }
+
+    historial.close();
+
+    system("pause");
+}
+
+// Funcion para guardar transacciones en el historial
+void guardarTransaccion(string usuario, string tipo, int monto) {
+
+    ofstream historial("Historial.csv", ios::app);
+
+    if (historial.is_open()) {
+
+        historial << usuario << ","
+                  << tipo << ","
+                  << monto
+                  << endl;
+
+        historial.close();
+    }
 }
