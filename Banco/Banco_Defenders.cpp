@@ -26,7 +26,7 @@ void registrarUsuario();
 void consultarSaldo();
 void consultarAdeudos();
 void pagarAdeudos();
-//void cotizarPrestamo();
+void cotizarPrestamo();
 void realizarPrestamo();
 void admin();
 void realizarDeposito();
@@ -96,7 +96,7 @@ int main() {
 
         case 5:
             system("cls"); // Limpiar pantalla
-            //cotizarPrestamo();
+            cotizarPrestamo();
             break;
 
         case 6:
@@ -872,4 +872,50 @@ void consultarAdeudos() {
     }
 
     archivo.close();
+}
+
+// Funcion para cotizar prestamo
+//***************************
+
+void cotizarPrestamo() {
+
+    double montoPrestamo;
+    double interesMensual;
+    double cuotaBase;
+    double seguroVida;
+    double pagoMensual;
+
+    int anios, meses;
+
+    cout << "===============================" << endl;
+    cout << "Seleccionaste cotizar prestamo" << endl;
+    cout << "===============================" << endl;
+
+    cout << "Ingrese el monto del prestamo: ";
+    cin >> montoPrestamo;
+
+    cout << "Ingrese el plazo en anios (1-6 anios): ";
+    cin >> anios;
+
+    meses = anios * 12;
+
+    // Interes mensual basado en 12.9 anual
+    interesMensual = (12.9 / meses) / 100;
+
+    // Formula de cuota base (amortizacion)
+    cuotaBase = (montoPrestamo * interesMensual) / (1 - pow(1 + interesMensual, -meses));
+
+    // Seguro de vida 1%
+    seguroVida = montoPrestamo * 0.01;
+
+    // Pago mensual total
+    pagoMensual = cuotaBase + seguroVida;
+
+    cout << endl;
+    cout << "===============================" << endl;
+    cout << "La cuota base seria de: $" << cuotaBase << endl;
+    cout << "El seguro de vida  seria de: $" << seguroVida << endl;
+    cout << "El pago mensual seria de: $" << pagoMensual << endl;
+    cout << "===============================" << endl;
+    system("pause");
 }
