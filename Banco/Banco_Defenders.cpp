@@ -24,14 +24,15 @@ bool usuarioExiste(string username);
 int menuPrincipal();
 void registrarUsuario();
 void consultarSaldo();
-void consultarAdeudos();
+//void consultarAdeudos();
 void pagarAdeudos();
-void cotizarPrestamo();
+//void cotizarPrestamo();
 void realizarPrestamo();
 void admin();
 void realizarDeposito();
 void verHistorialCompleto();
 void guardarTransaccion(string usuario, string tipo, int monto);
+void verificarAdmin();
 
 int main() {
 
@@ -85,22 +86,22 @@ int main() {
 
         case 3:
             system("cls"); // Limpiar pantalla
-            pagarAdeudos();
+            //consultarAdeudos();
             break;
 
         case 4:
             system("cls"); // Limpiar pantalla
-            cotizarPrestamo();
+            pagarAdeudos();
             break;
 
         case 5:
             system("cls"); // Limpiar pantalla
-            realizarPrestamo();
+            //cotizarPrestamo();
             break;
 
         case 6:
             system("cls"); // Limpiar pantalla
-            consultarAdeudos();
+            realizarPrestamo();
             break;
 
         case 7:
@@ -116,8 +117,7 @@ int main() {
 
         case 99:
             system("cls"); // Limpiar pantalla
-            admin();
-            verHistorialCompleto();
+            verificarAdmin();
             break;
 
         default:
@@ -157,8 +157,9 @@ int menuPrincipal() {
     cout << "3- Pagar adeudos" << endl;
     cout << "4- Cotizar prestamo" << endl;
     cout << "5- Realizar prestamo" << endl;
-    cout << "6- Realizar deposito" << endl;
-    cout << "7- Salir" << endl;
+    cout << "6- Consultar adeudo" << endl;
+    cout << "7- Realizar deposito" << endl;
+    cout << "8- Salir" << endl;
 
     cout << "Seleccione una opcion: " << endl;
     cin >> opcion;
@@ -787,95 +788,24 @@ void guardarTransaccion(string usuario, string tipo, int monto) {
     }
 }
 
-// Funcion para cotizar un prestamo sin necesidad de iniciar sesion
-//******************************************************************
+// Funcion de contraña para funcion de administracion (caso 99)
+//*************************************************************
 
-void cotizarPrestamo() {
+void verificarAdmin() {
 
-    // Variables del prestamo
-    double montoPrestamo;
-    double interesMensual;
-    double cuotaBase;
-    double seguroVida;
-    double pagoMensual;
+    string password;
 
-    // Variables de tiempo
-    int anios;
-    int meses;
+    cout << "Ingrese la contrasenia de administrador: " << endl;
+    cin >> password;
 
-    // Encabezado
-    cout << "===============================" << endl;
-    cout << "Seleccionaste cotizar prestamo" << endl;
-    cout << "===============================" << endl;
-
-    //Pedir monto del prestamo
-    cout << "Ingrese el monto del prestamo: $" << endl;
-
-    // Validar que sea numero positivo
-    while (!(cin >> montoPrestamo) ||
-           montoPrestamo <= 0) {
-
-        cout << "Monto invalido." << endl;
-        cout << "Ingrese nuevamente: $" << endl;
-
-        cin.clear();
-        cin.ignore(1000, '\n');
+    if (password != "adminlomejor123") {
+        cout << "Contrasenia incorrecta." << endl;
+        system("pause");
+        return;
     }
-
-    // Pedir plazo en anios
-    cout << "Ingrese el plazo en anios (1-6): " << endl;
-
-    // Validar rango permitido
-    while (!(cin >> anios) ||
-           anios < 1 ||
-           anios > 6) {
-
-        cout << "Plazo invalido." << endl;
-        cout << "Ingrese nuevamente (1-6): " << endl;
-
-        cin.clear();
-        cin.ignore(1000, '\n');
+    else {
+        cout << "Acceso concedido." << endl;
+        admin();
+        verHistorialCompleto();
     }
-
-    // Convertir anios a meses
-    meses = anios * 12;
-
-    // Interes anual 12.9 convertido a mensual
-    interesMensual = (12.9 / 12) / 100;
-
-    // Calculo de cuota base utilizando formula de amortizacion
-    cuotaBase = (montoPrestamo * interesMensual) / (1 - pow(1 + interesMensual, -meses));
-
-    // Seguro del 1% del monto solicitado
-    seguroVida = montoPrestamo * 0.01;
-
-    // Mensualidad fija total
-    pagoMensual = cuotaBase + seguroVida;
-
-    cout << endl;
-
-    cout << "===============================" << endl;
-    cout << "RESULTADO DE COTIZACION" << endl;
-    cout << "===============================" << endl;
-
-    cout << "Monto solicitado: $"
-         << montoPrestamo << endl;
-
-    cout << "Plazo: "
-         << meses
-         << " meses" << endl;
-
-    cout << "Cuota base: $"
-         << cuotaBase << endl;
-
-    cout << "Seguro de vida: $"
-         << seguroVida << endl;
-
-    cout << "Pago mensual fijo: $"
-         << pagoMensual << endl;
-
-    cout << "===============================" << endl;
-
-    // Pausar pantalla
-    system("pause");
 }
