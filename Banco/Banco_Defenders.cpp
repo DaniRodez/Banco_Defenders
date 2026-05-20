@@ -24,7 +24,7 @@ bool usuarioExiste(string username);
 int menuPrincipal();
 void registrarUsuario();
 void consultarSaldo();
-//void consultarAdeudos();
+void consultarAdeudos();
 void pagarAdeudos();
 //void cotizarPrestamo();
 void realizarPrestamo();
@@ -44,7 +44,7 @@ int main() {
 
         ofstream archivo(Nombre_Archivo);
 
-        archivo << "Usuario,Contrasenia,RFC,Saldo,Adeudo,Plazo" << endl;
+        archivo << "Usuario,Contrasenia,RFC,Saldo,Adeudo,Plazo,Mensualidad" << endl;
 
         archivo.close();
     }
@@ -86,7 +86,7 @@ int main() {
 
         case 3:
             system("cls"); // Limpiar pantalla
-            //consultarAdeudos();
+            consultarAdeudos();
             break;
 
         case 4:
@@ -154,10 +154,10 @@ int menuPrincipal() {
     cout << endl;
     cout << "1- Registrar usuario" << endl;
     cout << "2- Consultar saldo" << endl;
-    cout << "3- Pagar adeudos" << endl;
-    cout << "4- Cotizar prestamo" << endl;
-    cout << "5- Realizar prestamo" << endl;
-    cout << "6- Consultar adeudo" << endl;
+    cout << "3- Consultar adeudos" << endl;
+    cout << "4- Pagar adeudos" << endl;
+    cout << "5- Cotizar prestamo" << endl;
+    cout << "6- Realizar prestamo" << endl;
     cout << "7- Realizar deposito" << endl;
     cout << "8- Salir" << endl;
 
@@ -205,7 +205,7 @@ void registrarUsuario() {
                 << "0,"
                 << "0,"
                 << "0,"
-                << "0"
+                << "0" // Guardar nuevo usuario con saldo, adeudo, plazo y mensualidad iniciales en 0
                 << endl;
 
         archivo.close();
@@ -311,6 +311,7 @@ void consultarSaldo() {
 
 //Función para el modulo de administracion y mostrar los datos de los usuarios registrados (opcion secreta 99)
 //************************************************************************************************************
+
 void admin() {
 
     ifstream archivo(Nombre_Archivo);
@@ -805,7 +806,70 @@ void verificarAdmin() {
     }
     else {
         cout << "Acceso concedido." << endl;
+        system("pause");
         admin();
         verHistorialCompleto();
     }
+}
+
+//Funcion para consultar adeudos
+//***************************
+
+void consultarAdeudos() {
+    string username, password;
+    string linea;
+
+    cout << "===============================" << endl;
+    cout << "Seleccionaste consultar adeudos" << endl;
+    cout << "===============================" << endl;
+
+    cout << "Ingrese el nombre de usuario: " << endl;
+    cin >> username;
+
+    cout << "Ingrese la contrasenia: " << endl;
+    cin >> password;
+
+    ifstream archivo(Nombre_Archivo);
+
+    bool encontrado = false; // Variable para indicar si se encontró el usuario
+
+    // Saltar encabezado
+    getline(archivo, linea);
+
+    while (getline(archivo, linea)) {
+
+        stringstream stream(linea);
+
+        string usuario, contrasenia, rfc, saldo, adeudo, plazo, mensualidad;
+
+        getline(stream, usuario, ',');
+        getline(stream, contrasenia, ',');
+        getline(stream, rfc, ',');
+        getline(stream, saldo, ',');
+        getline(stream, adeudo, ',');
+        getline(stream, plazo, ',');
+        getline(stream, mensualidad, ','); // Leer mensualidad
+        
+        // Si el usuario y contrasenia coinciden mostrar adeudo
+        if (usuario == username && contrasenia == password) {
+
+            cout << "Adeudo actual: $" << adeudo << endl;
+            cout << "Plazo restante: " << plazo << " meses" << endl;
+            cout << "Mensualidad: $" << mensualidad << endl;
+
+            encontrado = true;
+
+            system("pause");
+
+            break;
+        }
+    }
+
+    // Si no se encontró el usuario, mostrar mensaje de error
+    if (!encontrado) {
+        cout << "Contrasenia y/o usuario incorrectos." << endl;
+         system("pause");
+    }
+
+    archivo.close();
 }
